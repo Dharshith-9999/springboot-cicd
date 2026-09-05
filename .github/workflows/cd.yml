@@ -18,6 +18,11 @@ jobs:
         steps:
             - name: CD Started
               run: echo "CI succeded and CD started"
+            - name: Show OIDC subject
+              run: |
+                echo "Repository: ${{ github.repository }}"
+                echo "Event: ${{ github.event_name }}"
+                echo "Workflow: ${{ github.event.workflow_run.name }}"
             - name: Configure aws credentials
               uses: aws-actions/configure-aws-credentials@v4
               with:
