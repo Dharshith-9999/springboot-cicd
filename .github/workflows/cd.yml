@@ -39,9 +39,18 @@ jobs:
                 run-id: ${{ github.event.workflow_run.id }}
                 path: target
 
+            - name: Verify source files
+              run: |
+                pwd
+                ls -la
+                echo "Dockerfile contents:"
+                cat Dockerfile
+                echo "Target directory:"
+                ls -la target
+
             - name: creat docker image
               run: |
-                docker build -t springboot-cicd:${{ github.event.workflow_run.head_sha }} .
+                docker build -f ./Dockerfile -t springboot-cicd:${{ github.event.workflow_run.head_sha }} .
             - name: Configure aws credentials
               uses: aws-actions/configure-aws-credentials@v4
               with:
