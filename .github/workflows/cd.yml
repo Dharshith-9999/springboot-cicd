@@ -18,8 +18,8 @@ jobs:
         steps:
             - name: CD Started
               run: echo "CI succeded and CD started"
-            - name: Doenload artifacts
-              uses: actions/download-artifacts@v4
+            - name: Download artifacts
+              uses: actions/download-artifact@v4
               with:
                 name: springboot-app
                 github-token: ${{ secrets.GITHUB_TOKEN }}
