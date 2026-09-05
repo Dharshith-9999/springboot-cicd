@@ -18,13 +18,21 @@ jobs:
         steps:
             - name: CD Started
               run: echo "CI succeded and CD started"
-            - name: Download artifacts
+            
+            - name: Checkout source
+              uses: actions/checkout@v4
+              with:
+                ref: ${{ github.event.workflow_run.head_sha }}
+
+            - name: Download application artifact
               uses: actions/download-artifact@v4
               with:
                 name: springboot-app
                 github-token: ${{ secrets.GITHUB_TOKEN }}
                 repository: ${{ github.repository }}
                 run-id: ${{ github.event.workflow_run.id }}
+                path: targe
+
             - name: creat docker image
               run: |
                 docker build -t springboot-cicd:${{ github.event.workflow_run.head_sha }} .
