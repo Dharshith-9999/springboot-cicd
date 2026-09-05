@@ -44,4 +44,19 @@ jobs:
 
             - name: verify aws credentias
               run: aws sts get-caller-identity
-              
+            - name: Login to Amazon ECR
+              run: |
+                aws ecr get-login-password --region us-east-1 | \
+                    docker login --username AWS --password-stdin \
+                    283609055440.dkr.ecr.us-east-1.amazonaws.com
+
+            - name: Tag Docker image
+              run: |
+                docker tag \
+                    springboot-cicd:${{ github.event.workflow_run.head_sha }} \
+                    283609055440.dkr.ecr.us-east-1.amazonaws.com/springboot-cicd:${{ github.event.workflow_run.head_sha }}
+
+            - name: Push Docker image to ECR
+              run: |
+                docker push \
+                    283609055440.dkr.ecr.us-east-1.amazonaws.com/springboot-cicd:${{ github.event.workflow_run.head_sha }}
