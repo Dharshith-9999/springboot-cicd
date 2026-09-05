@@ -24,6 +24,12 @@ jobs:
               with:
                 ref: ${{ github.event.workflow_run.head_sha }}
 
+            - name: verify source files
+              run: |
+                pwd
+                ls -la
+                git log -1 --oneline
+
             - name: Download application artifact
               uses: actions/download-artifact@v4
               with:
