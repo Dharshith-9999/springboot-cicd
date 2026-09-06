@@ -23,3 +23,13 @@ jobs:
                 script: |
                     whoami
                     hostname
+
+                    # Login to ECR from EC2
+                    aws ecr get-login-password --region us-east-1 | \
+                    docker login --username AWS --password-stdin \
+                    283609055440.dkr.ecr.us-east-1.amazonaws.com
+
+                    #pulling the docker image
+
+                    docker pull 283609055440.dkr.ecr.us-east-1.amazonaws.com/springboot-cicd:${{ github.event.workflow_run.head_sha }}
+                    docker images
