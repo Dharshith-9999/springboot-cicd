@@ -33,3 +33,55 @@ jobs:
 
                     docker pull 283609055440.dkr.ecr.us-east-1.amazonaws.com/springboot-cicd:${{ github.event.workflow_run.head_sha }}
                     docker images
+
+            - name: Capture old image and remove existing container
+              uses: appleboy/ssh-action@v1
+              with:
+                host: ${{ secrets.EC2_HOST }}
+                username: ${{ secrets.EC2_USER }}
+                key: ${{ secrets.EC2_SSH_KEY }}
+                script: |
+                    if docker ps -a -q --filter "name=^springboot-app$" | grep -q .; then
+
+                        echo "Existing springboot-app container found."
+
+                        OLD_IMAGE=$(docker inspect --format='{{.Config.Image}}' springboot-app)
+
+                        echo "Old image: $OLD_IMAGE"
+
+                        echo "$OLD_IMAGE" > /home/ubuntu/old_image.txt
+
+                        if docker ps -q --filter "name=^springboot-app$" | grep -q .; then
+                        echo "Stopping the existing container..."
+                        docker stop springboot-app
+                        fi
+
+                        echo "Removing the existing container..."
+                        docker rm springboot-app
+
+                    else
+
+                        echo "No existing springboot-app container found."
+                        rm -f /home/ubuntu/old_image.txt
+
+                    fi
+
+
+            - name: start the container 
+              uses: appleboy/ssh-action@v1
+              with:
+                host: ${{ secrets.EC2_HOST }}
+                username: ${{ secrets.EC2_USER }}
+                key: ${{ secrets.EC2_SSH_KEY }}
+                script: |
+                    echo "Starting new Spring Boot container..."
+                    docker run -d --name springboot-app -p 8080:8080 283609055440.dkr.ecr.us-east-1.amazonaws.com/springboot-cicd:${{ github.event.workflow_run.head_sha }}
+
+                    echo "New Container is started..."
+                    sleep 20
+                    if curl --fail http://localhost:8080; then
+                        echo " application running successfully"
+                    else:
+                        echo " Application is not Running"
+                        exit 1
+                    fi
