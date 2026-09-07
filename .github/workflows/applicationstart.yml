@@ -87,7 +87,7 @@ jobs:
                         exit 1
                     fi
             - name: Roll Back to the old image
-              if: ${{ steps.deploy_new.outcome == 'failure' }}
+              if: ${{ failure() && steps.deploy_new.outcome == 'failure' }}
               uses: appleboy/ssh-action@v1
               with:
                 host: ${{ secrets.EC2_HOST }}
