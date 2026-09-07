@@ -81,7 +81,7 @@ jobs:
                     sleep 20
                     if curl --fail http://localhost:8080; then
                         echo " application running successfully"
-                    else:
+                    else
                         echo " Application is not Running"
                         exit 1
                     fi
