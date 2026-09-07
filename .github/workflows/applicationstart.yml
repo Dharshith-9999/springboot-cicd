@@ -68,6 +68,7 @@ jobs:
 
 
             - name: start the container 
+              id: deploy_new
               uses: appleboy/ssh-action@v1
               with:
                 host: ${{ secrets.EC2_HOST }}
@@ -85,3 +86,31 @@ jobs:
                         echo " Application is not Running"
                         exit 1
                     fi
+            - name: Roll Back to the old image
+              if: ${{ steps.deploy_new.outcome == 'failure' }}
+              uses: appleboy/ssh-action@v1
+              with:
+                host: ${{ secrets.EC2_HOST }}
+                username: ${{ secrets.EC2_USER }}
+                key: ${{ secrets.EC2_SSH_KEY }}
+                script: |
+                  echo "Roll Back step started"
+                  if [ -f /home/ubuntu/old_image.txt ]; then
+                    echo "Application is not runnig"
+                    docker stop springboot-app
+                    docker rm springboot-app
+                    OLD_IMAGE=$(cat /home/ubuntu/old_image.txt)
+                    echo "Old Image is : ${OLD_IMAGE}"
+                    docker run -d --name springboot-app -p 8080:8080 ${OLD_IMAGE}
+                    sleep 20
+                    if curl --fail http://localhost:8080; then
+                      echo "Application is runnig successfully...."
+                    else
+                      echo "Application not working on ROLLBACK......"
+                    fi
+                  else
+                    echo " the old image file not found "
+                    echo " Not possible for the Roll Back"
+                    exit 1
+                  fi
+              
