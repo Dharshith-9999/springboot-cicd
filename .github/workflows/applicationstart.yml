@@ -76,7 +76,7 @@ jobs:
                 key: ${{ secrets.EC2_SSH_KEY }}
                 script: |
                     echo "Starting new Spring Boot container..."
-                    docker run -d --name springboot-app -p 8080:8080 283609055440.dkr.ecr.us-east-1.amazonaws.com/springboot-cicd:${{ github.event.workflow_run.head_sha }}
+                    docker run -d --name springboot-app -p 8080:8081 283609055440.dkr.ecr.us-east-1.amazonaws.com/springboot-cicd:${{ github.event.workflow_run.head_sha }}
 
                     echo "New Container is started..."
                     sleep 20
