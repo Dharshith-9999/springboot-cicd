@@ -77,7 +77,7 @@ jobs:
                 script: |
                     echo "Starting new Spring Boot container..."
 
-                    docker run -d --name springboot-app-new-green -p 8081:8080 283609055440.dkr.ecr.us-east-1.amazonaws.com/springboot-cicd:${{ github.event.workflow_run.head_sha }}
+                    docker run -d --name springboot-app-new-green -p 8081:8080 283609055440.dkr.ecr.us-east-1.amazonaws.com/springboot-cicd:${{ github.event.workflow_run.head_sha }} || exit 1
 
                     echo "New Container is started..."
                     sleep 20
