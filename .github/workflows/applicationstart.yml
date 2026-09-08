@@ -87,6 +87,21 @@ jobs:
                         echo " Application is not Running"
                         exit 1
                     fi
+            - name:  switch traffic 
+              uses: appleboy/ssh-sction@v1
+              with:
+                host: ${{ secrets.EC2_HOST }}
+                username: ${{ secrets.EC2_USER }}
+                key: ${{ secrets.EC2_SSH_KEY }}
+                script: |
+                  echo "switching traffic to the green environment "
+                  sudo sed -i 's|proxy_pass http://127.0.0.1:8080;|proxy_pass http://127.0.0.1:8081;|' /etc/nginx/sites-available/default
+                  echo "Testing the nginx configuration"
+                  sudo nginx -t
+                  echo " nginx is reloading "
+                  sudo systemctl reload nginx 
+
+                  echo "traffic is switched to green successfully .. "
             # - name: Roll Back to the old image
             #   if: ${{ failure() && steps.deploy_new.outcome == 'failure' }}
             #   uses: appleboy/ssh-action@v1
@@ -114,4 +129,5 @@ jobs:
             #         echo " Not possible for the Roll Back"
             #         exit 1
             #       fi
+
               
